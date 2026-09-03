@@ -56,9 +56,37 @@ class StudentController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, int $id) {
-        $request->validate([
-            ''
+    public function update(Request $request, int $id)
+    {
+        $student = Student::findOrFail($id);
+
+        $data = $request->validate([
+            'nis'   => 'sometimes|nullable|string',
+            'name'  => 'sometimes|nullable|string',
+            'class' => 'sometimes|nullable|string',
+            'major' => 'sometimes|nullable|string',
+            'email' => 'sometimes|nullable|email',
+            'phone' => 'sometimes|nullable|string',
         ]);
+
+        $student->update(collect($data)->whereNotNull()->toArray());
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'update student successfully',
+            'data'    => $student
+        ]);
+    }
+
+    public function delete(int $id)
+    {
+        $student = Student::where("id", $id)->first();
+
+        $student->delete();
+
+        return response()->json([
+            'status' => "success",
+            "message" => "delete data student " . $student->id . " successfuly",
+        ], 200);
     }
 }
